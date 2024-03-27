@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Jumpstart NEO</title>
+	<link id="stylesheet" rel="stylesheet" href="{{ url_for('static', filename='dark-theme-alt.css') }}">
+	<link rel="icon" type="image/x-icon" href="static/images/csh-os.png">
+	<script src="https://apis.google.com/js/api.js"></script>
+
+</head>
+
+<body>
+	<img class="csh-os" src="/static/images/csh-alt.png">
+
+	<div id="top-bar">
+		<p id="datetime"></p>
+		<p id="link-holder">jumpstartneo.csh.rit.edu</p>
+	</div>
+
+	<div id="events-container">
+		<div id="events-title">CSH Events</div>
+		<div id="events-wrapper"></div>
+	</div>
+
+	<div id="weather-and-announcements">
+
+
+		<div id="announcements-window">
+			<div id="announcements-title">Most Recent Announcement</div>
+			<div id="announcement"></div>
+			<div id="announcement-timestamp"></div>
+		</div>
+
+		<div id="weather-holder">
+			<script>
+				// Function to update the text and link
+				async function updateText() {
+					var textElement = document.getElementById('weather-holder');
+					var linkElement = document.getElementById('stylesheet');
+
+					if (previousSunStatus !== await checkIfSunUp()) {
+						previousSunStatus = await checkIfSunUp();
+
+						if (previousSunStatus) {
+							linkElement.href = "{{ url_for('static', filename='light-theme-alt.css') }}";  
+						} else {
+							linkElement.href = "{{ url_for('static', filename='dark-theme-alt.css') }}";  
+						}
+
+						if (previousSunStatus) {
+							textElement.innerHTML = '<a class="weatherwidget-io" href="https://forecast7.com/en/43d16n77d61/rochester/?unit=us" ' +
+								'data-label_1="ROCHESTER" data-label_2="WEATHER" data-font="Fira Sans" data-icons="Climacons Animated" ' +
+								'data-days="5" data-basecolor="#f7bce4" data-accent="#fdcbbc" data-textcolor="#87008f">ROCHESTER ' +
+								'WEATHER</a>';
+						} else {
+							textElement.innerHTML = '<a class="weatherwidget-io" href="https://forecast7.com/en/43d16n77d61/rochester/?unit=us" ' +
+								'data-label_1="ROCHESTER" data-label_2="WEATHER" data-font="Fira Sans" data-icons="Climacons Animated" ' +
+								'data-days="5" data-basecolor="#851a81" data-accent="#900d58" data-textcolor="#ff9494">ROCHESTER ' +
+								'WEATHER</a>';
+						}
+
+						if (previousSunStatus) {
+							document.querySelector('.csh-os').src = "static/images/csh-alt.png"
+						} else {
+
+							document.querySelector('.csh-os').src = "static/images/csh-alt.png"
+						}
+
+						(function (d, s, id) {
+							var js = d.createElement(s);
+							js.id = id;
+							js.src = 'https://weatherwidget.io/js/widget.min.js';
+							d.getElementsByTagName('head')[0].appendChild(js);
+						})(document, 'script', 'weatherwidget-io-js');
+					}
+				}
+
+				// Call the function when the page loads
+				setInterval(updateText, 5000);
+			</script>
+		</div>
+
+	</div>
+
+
+</body>
+
+<script>
+	previousSunStatus = null;
+	function getFormattedDateTime() {
+		const now = new Date();
+
+		const options = {
+			weekday: 'long',
+			month: 'numeric',
+			day: 'numeric',
+			year: 'numeric',
+			hour: 'numeric',
+			minute: 'numeric',
+			hour12: true // Use 12-hour format
+		};
+
+		const formattedDateTime = `${now.toLocaleDateString(undefined, options)}`;
+
+		return formattedDateTime;
+	}
+
+	function convertTimeTo24HourFormat(timeString) {
+		var timeArray = timeString.split(':');
+		var hours = parseInt(timeArray[0]);
+		var minutes = parseInt(timeArray[1]);
+
+		if (timeString.includes('PM') && hours !== 12) {
+			hours += 12;
+		}
+
+		return hours.toString() + ':' + minutes.toString().padStart(2, '0');
+	}
+
+	function convertTimeToMinutes(timeString) {
+		var timeArray = timeString.split(':');
+		var hours = parseInt(timeArray[0]);
+		var minutes = parseInt(timeArray[1]);
+
+		if (timeString.includes('PM') && hours !== 12) {
+			hours += 12;
+		}
+
+		return hours * 60 + minutes
+	}
+
+	async function checkIfSunUp() {
+		var response = await fetch('https://api.sunrisesunset.io/json?lat=43.15478&lng=-77.61556')
+		var results = await response.json()
+
+		var sunriseTime = results.results.sunrise;  // Example time, replace with actual time
+		var sunsetTime = results.results.sunset;   // Example time, replace with actual time
+
+		sunriseTime = convertTimeToMinutes(convertTimeTo24HourFormat(sunriseTime));
+		sunsetTime = convertTimeToMinutes(convertTimeTo24HourFormat(sunsetTime));
+
+		var now = new Date();
+		var currentTime = convertTimeToMinutes(now.getHours() + ":" + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
+
+		var sunIsUp = (currentTime >= sunriseTime && currentTime <= sunsetTime);
+
+		return sunIsUp;
+	}
+
+	function getEventFormattedDateTime() {
+		const now = new Date();
+
+		const options = {
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric',
+			hour: 'numeric',
+			minute: 'numeric',
+			hour12: true // Use 12-hour format
+		};
+
+		const formattedDateTime = `${now.toLocaleDateString(undefined, options)}`;
+
+		return formattedDateTime;
+	}
+
+	async function updateEvents() {
+		// Update the div content with the formatted date and time
+		const datetimeDiv = document.getElementById("datetime");
+		if (datetimeDiv) {
+			datetimeDiv.textContent = getFormattedDateTime();
+		}
+
+		var response = await fetch('/get_events')
+		var events = await response.json()
+		var eventsWrapper = document.getElementById('events-wrapper');
+		var announcementDiv = document.getElementById('announcement');
+		var announcementTimestampDiv = document.getElementById('announcement-timestamp');
+
+		eventsWrapper.innerHTML = ''; // clear the eventsWrapper div
+
+		for (var j = 0; j < 4; j++) {
+			for (var i = 0; i < events.length; i++) {
+				var event = events[i];
+
+				var eventDiv = document.createElement('div');
+				eventDiv.classList.add('event');
+				eventsWrapper.appendChild(eventDiv);
+
+				var summaryDiv = document.createElement('div');
+				summaryDiv.classList.add('summary')
+				summaryDiv.innerHTML = "<strong>" + event.summary;
+				eventDiv.appendChild(summaryDiv);
+
+				var start = event.start.dateTime || event.start.date;
+				var startDate = new Date(start);
+
+				var now = new Date();
+				var timeDiff = startDate.getTime() - now.getTime();
+
+				var timeDiv = document.createElement('div');
+				var untilDiv = document.createElement('div');
+
+				if (timeDiff < 0) {
+					// event is currently occuring
+					timeDiv.innerHTML = startDate.toLocaleDateString() + ' ' + startDate.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric' });
+					untilDiv.innerHTML = 'now';
+				} else {
+					// event has not started yet
+					var diffHours = Math.floor(timeDiff / (1000 * 60 * 60));
+					var diffMinutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+					timeDiv.innerHTML = startDate.toLocaleDateString() + ' ' + startDate.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric' });
+					untilDiv.innerHTML = diffHours + 'h ' + diffMinutes + 'm';
+				}
+
+				timeDiv.style.fontSize = "25px";
+				untilDiv.style.fontSize = "20px";
+
+				eventDiv.appendChild(timeDiv);
+				eventDiv.appendChild(untilDiv)
+			}
+		}
+
+		await fetch('/get_announcements')
+			.then((response) => response.json())
+			.then((json) => {
+				announcementDiv.innerHTML = json.sender_name + ":<br>" + json.message_text;
+				announcementTimestampDiv.innerHTML = json.timestamp;
+			});
+	}
+
+	setInterval(updateEvents, 5000);
+</script>
+
+</html>

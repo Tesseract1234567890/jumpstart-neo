@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+
+:root {
+	--title-color: #00c679;
+	--background-color: #9ee4bb;
+	--analogous-color: #57e09c;
+	--analogous-color-2: #57e09c;
+	--accent-color: #bbebcf9e;
+	--text-color: #007300;
+}
+
+.channel {
+	border: 3px solid;
+	padding-right: 5px;
+	padding-left: 5px;
+	border-radius: 10px;
+	background-color: var(--title-color)
+}
+
+.mention {
+	border: 3px solid;
+	padding-right: 5px;
+	padding-left: 5px;
+	border-radius: 10px;
+	background-color: var(--title-color)
+}
+
+.role {
+	font-style: bold;
+	border: 3px solid;
+	padding-right: 5px;
+	padding-left: 5px;
+	border-radius: 10px;
+	background-color: var(--title-color)
+}
+
+code {
+	border: 3px solid;
+	padding-right: 5px;
+	padding-left: 5px;
+	border-radius: 10px;
+	background-color: var(--title-color)
+}
+
+body {
+	background-color: var(--background-color);
+	color: var(--background-color);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-size: auto;
+	background-attachment: fixed;
+	background-position: center;
+
+}
+
+.csh-os {
+	opacity: 0.6;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 400px;
+}
+
+#weather-holder {
+	position: absolute;
+	height: auto;
+	width: calc(max(500px, 40.3vw));
+	transform: translate(0px, 12px);
+}
+
+.weatherwidget-io {
+	border-radius: 10px;
+	border: 3px solid var(--text-color);
+}
+
+#weatherWidget * {
+	font-family: 'Inter'
+}
+
+#datetime {
+	color: var(--text-color);
+	font-size: 30px;
+	font-family: 'Inter';
+	font-weight: bold;
+	padding-left: 10px;
+	z-index: 1;
+}
+
+#link-holder {
+	color: var(--text-color);
+	font-size: 30px;
+	margin-left: auto;
+	font-family: 'Inter';
+	font-weight: bold;
+	padding-right: 10px;
+	z-index: 1;
+}
+
+#events-container {
+	border-radius: 10px;
+	float: right;
+	transform: translate(-5px, 83px);
+	width: 400px;
+	background-color: var(--background-color);
+	border: 3px solid var(--text-color);
+	max-height: calc(100vh - 110px);
+	overflow-y: auto;
+	overflow: hidden;
+}
+
+#events-title {
+	height: 50px;
+	
+	background-color: var(--title-color);
+	border-bottom: 3px solid var(--text-color);
+	color: var(--text-color);
+	font-size: 20px;
+	font-family: 'Inter';
+	font-size: 40px;
+	font-weight: bold;
+	text-align: center;
+	line-height: 50px;
+	position: relative;
+	z-index: 1;
+}
+
+#top-bar {
+	left: 0px;
+	right: 0px;
+	height: 70px;
+	margin: 10px;
+	border-radius: 10px;
+	background-color: var(--title-color);
+	border: 3px solid var(--text-color);
+	position: fixed;
+	top: 0;
+	box-sizing: border-box;
+	width: calc(100%-20px);
+	z-index: 100;
+	font-size: 40px;
+	display: flex;
+	justify-content: left;
+	align-items: center;
+}
+
+#weather-and-announcements {
+	position: relative;
+	transform: translate(5px, 83px);
+}
+
+#announcements-window {
+	border-radius: 10px;
+	color: var(--text-color);
+	width: calc(max(500px, 40vw));
+	padding-bottom: 10px;
+	background-color: var(--analogous-color);
+	border: 3px solid var(--text-color);
+	max-height: calc(100vh - 80px);
+}
+
+#announcements-title {
+	height: auto;
+	background-color: var(--title-color);
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+	color: var(--text-color);
+	font-size: 20px;
+	font-family: 'Inter';
+	font-size: 40px;
+	font-weight: bold;
+	text-align: center;
+	position: relative;
+	z-index: 1;
+
+}
+
+#announcement {
+	border-top: 3px solid var(--text-color);
+	font-family: 'Inter';
+	font-size: 30px;
+	padding-bottom: 5px;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px
+}
+
+#announcement-timestamp {
+	font-family: 'Inter';
+	font-size: 20px;
+	padding-left: 10px
+}
+
+#events-wrapper {
+	z-index: 0;
+	background-color: var(--analogous-color);
+}
+
+.event {
+	color: var(--text-color);
+	padding: 10px;
+	border: 4px solid var(--text-color);
+	font-family: 'Inter';
+	margin: 10px;
+	border-radius: 10px;
+	font-size: 20px;
+	background-color: var(--accent-color);
+}
+
+.event .summary {
+	font-family: 'Inter';
+	font-size: 30px;
+	padding-bottom: 5px;
+}
+
+#events-wrapper {
+	animation: scroll 45s linear infinite;
+}
+
+@keyframes scroll {
+	0% {
+		transform: translateY(0);
+	}
+
+	100% {
+		transform: translateY(-25%);
+	}
+}
